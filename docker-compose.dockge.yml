@@ -10,18 +10,14 @@ services:
       - "3000:3000"
     environment:
       # Navidrome Server Configuration
-      # Use host.docker.internal:4533 for Navidrome on same host (Windows/Mac)
-      # Use 172.17.0.1:4533 for Navidrome on same host (Linux)
-      # Or use your Navidrome server IP/domain
-      NAVIDROME_URL: http://host.docker.internal:4533
-      
-      # Your Navidrome Credentials (REQUIRED - Replace these values)
-      NAVIDROME_USERNAME: your_username_here
-      NAVIDROME_PASSWORD: your_password_here
+      # Set these in Dockge's environment variables section
+      NAVIDROME_URL: ${NAVIDROME_URL:-http://host.docker.internal:4533}
+      NAVIDROME_USERNAME: ${NAVIDROME_USERNAME}
+      NAVIDROME_PASSWORD: ${NAVIDROME_PASSWORD}
       
       # Server Configuration (Optional)
-      PORT: 3000
-      UPDATE_INTERVAL: 2000
+      PORT: ${PORT:-3000}
+      UPDATE_INTERVAL: ${UPDATE_INTERVAL:-2000}
     restart: unless-stopped
     labels:
       - "com.dockge.description=Navidrome Now Playing Overlay"

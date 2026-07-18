@@ -26,18 +26,23 @@ services:
     ports:
       - "3000:3000"
     environment:
-      NAVIDROME_URL: http://host.docker.internal:4533
-      NAVIDROME_USERNAME: your_username_here
-      NAVIDROME_PASSWORD: your_password_here
-      PORT: 3000
-      UPDATE_INTERVAL: 2000
+      NAVIDROME_URL: ${NAVIDROME_URL:-http://host.docker.internal:4533}
+      NAVIDROME_USERNAME: ${NAVIDROME_USERNAME}
+      NAVIDROME_PASSWORD: ${NAVIDROME_PASSWORD}
+      PORT: ${PORT:-3000}
+      UPDATE_INTERVAL: ${UPDATE_INTERVAL:-2000}
     restart: unless-stopped
 ```
 
-5. **Edit the environment variables:**
-   - `NAVIDROME_URL`: Your Navidrome server URL
-   - `NAVIDROME_USERNAME`: Your Navidrome username
-   - `NAVIDROME_PASSWORD`: Your Navidrome password
+5. **Set environment variables in Dockge:**
+   - Click on the **"Environment Variables"** tab or section
+   - Add these variables:
+     - `NAVIDROME_URL` = Your Navidrome server URL (e.g., `http://192.168.1.100:4533`)
+     - `NAVIDROME_USERNAME` = Your Navidrome username
+     - `NAVIDROME_PASSWORD` = Your Navidrome password
+   - Optional variables (have defaults):
+     - `PORT` = Server port (default: `3000`)
+     - `UPDATE_INTERVAL` = Polling interval in ms (default: `2000`)
 
 6. **Click "Deploy"**
 
