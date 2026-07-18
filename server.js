@@ -141,7 +141,8 @@ class SubsonicClient {
           duration: entry.duration || 0,
           coverArt: coverArtUrl,
           username: entry.username,
-          playerId: entry.playerId
+          playerId: entry.playerId,
+          minutesAgo: entry.minutesAgo || 0
         };
       }
       
