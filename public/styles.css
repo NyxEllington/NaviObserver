@@ -1,0 +1,409 @@
+@import url('https://fonts.cdnfonts.com/css/nexa-bold');
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Nexa', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  background: transparent;
+  overflow: hidden;
+}
+
+/* Main overlay container */
+.overlay {
+  position: fixed;
+  bottom: 30px;
+  left: 30px;
+  opacity: 1;
+  transform: translateY(0);
+  transition: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+  z-index: 9999;
+}
+
+.overlay.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Card */
+.card {
+  display: flex;
+  align-items: center;
+  background: linear-gradient(135deg, rgba(30, 30, 35, 0.98) 0%, rgba(20, 20, 25, 0.98) 100%);
+  border-radius: 20px;
+  padding: 20px;
+  box-shadow: 
+    0 20px 60px rgba(0, 0, 0, 0.5),
+    0 0 0 1px rgba(255, 255, 255, 0.1),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(20px);
+  position: relative;
+  overflow: hidden;
+  min-width: 500px;
+  max-width: 600px;
+}
+
+/* Top gradient accent */
+.card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, #ff6b6b, #ffd93d, #6bcf7f, #4d96ff, #c77dff);
+  background-size: 200% 100%;
+  animation: gradientShift 3s ease infinite;
+  z-index: 0;
+}
+
+@keyframes gradientShift {
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+}
+
+/* Album Art */
+.album-container {
+  position: relative;
+  flex-shrink: 0;
+  margin-right: 20px;
+  z-index: 2;
+  width: 120px;
+  height: 120px;
+}
+
+.album-art {
+  width: 120px;
+  height: 120px;
+  border-radius: 12px;
+  object-fit: cover;
+  box-shadow: 
+    0 10px 30px rgba(0, 0, 0, 0.5),
+    0 0 0 1px rgba(255, 255, 255, 0.1);
+  transition: opacity 0.3s ease;
+  display: block;
+  position: relative;
+  z-index: 3;
+}
+
+.placeholder-art {
+  width: 120px;
+  height: 120px;
+  display: none;
+  position: relative;
+  z-index: 3;
+  filter: drop-shadow(0 10px 30px rgba(0, 0, 0, 0.5));
+}
+
+/* Vinyl Disc */
+.vinyl-disc {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 140px;
+  height: 140px;
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 1;
+  transition: transform 0.3s ease;
+}
+
+.vinyl-disc.spinning {
+  animation: vinylSpin 3s linear infinite;
+}
+
+@keyframes vinylSpin {
+  from { transform: translate(-50%, -50%) rotate(0deg); }
+  to { transform: translate(-50%, -50%) rotate(360deg); }
+}
+
+.vinyl-outer {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  background: radial-gradient(
+    circle at 30% 30%,
+    rgba(40, 40, 40, 0.9) 0%,
+    rgba(20, 20, 20, 0.95) 40%,
+    rgba(10, 10, 10, 0.98) 100%
+  );
+  box-shadow: 
+    inset 0 0 20px rgba(0, 0, 0, 0.8),
+    inset 0 0 40px rgba(0, 0, 0, 0.6),
+    0 4px 20px rgba(0, 0, 0, 0.5);
+}
+
+.vinyl-grooves {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 90%;
+  height: 90%;
+  border-radius: 50%;
+  background-image: 
+    repeating-radial-gradient(
+      circle at center,
+      transparent 0px,
+      transparent 1.5px,
+      rgba(255, 255, 255, 0.03) 1.5px,
+      rgba(255, 255, 255, 0.03) 3px
+    );
+  opacity: 0.8;
+}
+
+.vinyl-label {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 50%;
+  height: 50%;
+  border-radius: 50%;
+  background: radial-gradient(
+    circle at center,
+    rgba(255, 217, 61, 0.9) 0%,
+    rgba(255, 200, 87, 0.8) 50%,
+    rgba(255, 170, 61, 0.7) 100%
+  );
+  box-shadow: 
+    inset 0 0 15px rgba(0, 0, 0, 0.3),
+    0 2px 10px rgba(255, 217, 61, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.label-text {
+  font-size: 9px;
+  font-weight: 700;
+  color: rgba(0, 0, 0, 0.6);
+  letter-spacing: 1px;
+  text-align: center;
+  transform: rotate(0deg);
+  animation: labelPulse 2s ease-in-out infinite;
+}
+
+@keyframes labelPulse {
+  0%, 100% { opacity: 0.8; }
+  50% { opacity: 1; }
+}
+
+.vinyl-center {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 15%;
+  height: 15%;
+  border-radius: 50%;
+  background: radial-gradient(
+    circle at center,
+    rgba(40, 40, 40, 0.95) 0%,
+    rgba(20, 20, 20, 1) 100%
+  );
+  box-shadow: 
+    inset 0 0 5px rgba(0, 0, 0, 0.8),
+    0 1px 3px rgba(0, 0, 0, 0.5);
+}
+
+/* Track Info */
+.info {
+  flex: 1;
+  min-width: 0;
+  color: white;
+  position: relative;
+  z-index: 5;
+}
+
+.badge {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 1.5px;
+  color: #ffd93d;
+  text-shadow: 0 0 10px rgba(255, 217, 61, 0.5);
+  margin-bottom: 8px;
+  text-transform: uppercase;
+  z-index: 10;
+}
+
+.icon {
+  width: 14px;
+  height: 14px;
+  color: #ffd93d;
+  filter: drop-shadow(0 0 4px rgba(255, 217, 61, 0.5));
+  animation: pulse 2s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.7; transform: scale(0.95); }
+}
+
+.title {
+  font-size: 24px;
+  font-weight: 700;
+  margin-bottom: 4px;
+  color: #ffd93d;
+  text-shadow: 0 0 20px rgba(255, 217, 61, 0.6), 0 2px 4px rgba(0, 0, 0, 0.8);
+  position: relative;
+  overflow: hidden;
+  width: 100%;
+  max-width: 330px;
+  height: 32px;
+  line-height: 32px;
+  z-index: 10;
+}
+
+.title-inner {
+  display: inline-block;
+  white-space: nowrap;
+  padding-right: 20px;
+  will-change: transform;
+  transform: translate3d(0, 0, 0);
+  backface-visibility: hidden;
+  -webkit-font-smoothing: antialiased;
+  position: relative;
+  z-index: 10;
+}
+
+.title.scrolling .title-inner {
+  animation: marquee 20s linear 1s infinite;
+}
+
+@keyframes marquee {
+  0% { 
+    transform: translate3d(0, 0, 0); 
+  }
+  100% { 
+    transform: translate3d(-50%, 0, 0); 
+  }
+}
+
+.artist {
+  font-size: 18px;
+  font-weight: 600;
+  margin-bottom: 4px;
+  color: #6bcf7f;
+  text-shadow: 0 0 15px rgba(107, 207, 127, 0.5), 0 1px 3px rgba(0, 0, 0, 0.8);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 330px;
+  z-index: 10;
+}
+
+.album {
+  font-size: 14px;
+  font-weight: 400;
+  color: #c77dff;
+  text-shadow: 0 0 10px rgba(199, 125, 255, 0.4), 0 1px 2px rgba(0, 0, 0, 0.8);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin-bottom: 8px;
+  max-width: 330px;
+  z-index: 10;
+}
+
+.meta {
+  display: flex;
+  gap: 12px;
+  font-size: 12px;
+  margin-top: 8px;
+  position: relative;
+  z-index: 10;
+}
+
+.meta-item {
+  padding: 6px 14px;
+  background: linear-gradient(135deg, rgba(255, 107, 107, 0.15), rgba(255, 217, 61, 0.15));
+  border-radius: 14px;
+  border: 1px solid rgba(255, 200, 87, 0.3);
+  display: inline-block;
+  color: #ffd93d;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  box-shadow: 0 2px 8px rgba(255, 107, 107, 0.1);
+  transition: all 0.3s ease;
+}
+
+.meta-item:first-child {
+  background: linear-gradient(135deg, rgba(77, 150, 255, 0.15), rgba(108, 207, 127, 0.15));
+  border-color: rgba(108, 207, 127, 0.3);
+  color: #6bcf7f;
+}
+
+.meta-item:empty {
+  display: none;
+}
+
+/* Equalizer */
+.equalizer {
+  position: absolute;
+  bottom: 20px;
+  right: 20px;
+  display: flex;
+  align-items: flex-end;
+  gap: 4px;
+  height: 30px;
+  z-index: 1;
+}
+
+.bar {
+  width: 3px;
+  background: linear-gradient(to top, #ff6b6b, #ffd93d);
+  border-radius: 3px;
+  animation: equalize 0.6s ease-in-out infinite;
+}
+
+.bar:nth-child(1) { animation-delay: 0.1s; height: 60%; }
+.bar:nth-child(2) { animation-delay: 0.2s; height: 80%; }
+.bar:nth-child(3) { animation-delay: 0.3s; height: 100%; }
+.bar:nth-child(4) { animation-delay: 0.4s; height: 70%; }
+.bar:nth-child(5) { animation-delay: 0.5s; height: 85%; }
+
+@keyframes equalize {
+  0%, 100% { transform: scaleY(1); opacity: 0.7; }
+  50% { transform: scaleY(0.4); opacity: 0.4; }
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .card {
+    min-width: 350px;
+    padding: 15px;
+  }
+  
+  .album-container {
+    width: 90px;
+    height: 90px;
+  }
+  
+  .album-art,
+  .placeholder-art {
+    width: 90px;
+    height: 90px;
+  }
+  
+  .vinyl-disc {
+    width: 105px;
+    height: 105px;
+  }
+  
+  .title {
+    font-size: 20px;
+  }
+  
+  .artist {
+    font-size: 16px;
+  }
+}

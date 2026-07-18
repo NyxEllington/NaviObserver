@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Navidrome Now Playing</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  
+  <div id="overlay" class="overlay visible">
+    <div class="card">
+      
+      <!-- Album Art -->
+      <div class="album-container">
+        <div class="vinyl-disc" id="vinylDisc">
+          <div class="vinyl-outer"></div>
+          <div class="vinyl-grooves"></div>
+          <div class="vinyl-label">
+            <div class="label-text">NOW PLAYING</div>
+          </div>
+          <div class="vinyl-center"></div>
+        </div>
+        <img id="albumArt" class="album-art" src="" alt="Album Art">
+        <svg id="placeholderArt" class="placeholder-art" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <linearGradient id="gradBg" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" style="stop-color:#2d2d35;stop-opacity:1" />
+              <stop offset="100%" style="stop-color:#1a1a20;stop-opacity:1" />
+            </linearGradient>
+            <linearGradient id="gradVinyl" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" style="stop-color:#1a1a1a;stop-opacity:1" />
+              <stop offset="50%" style="stop-color:#0d0d0d;stop-opacity:1" />
+              <stop offset="100%" style="stop-color:#1a1a1a;stop-opacity:1" />
+            </linearGradient>
+          </defs>
+          <rect width="200" height="200" fill="url(#gradBg)" rx="12"/>
+          <circle cx="100" cy="100" r="65" fill="url(#gradVinyl)" opacity="0.3"/>
+          <circle cx="100" cy="100" r="55" fill="none" stroke="#333" stroke-width="0.5" opacity="0.4"/>
+          <circle cx="100" cy="100" r="45" fill="none" stroke="#333" stroke-width="0.5" opacity="0.4"/>
+          <circle cx="100" cy="100" r="35" fill="none" stroke="#333" stroke-width="0.5" opacity="0.4"/>
+          <circle cx="100" cy="100" r="20" fill="#ffd93d" opacity="0.8"/>
+          <path d="M100 55 L100 45 M100 145 L100 155 M55 100 L45 100 M145 100 L155 100" stroke="#ffd93d" stroke-width="3" stroke-linecap="round" opacity="0.6"/>
+          <circle cx="100" cy="100" r="6" fill="#2d2d35"/>
+          <text x="100" y="180" text-anchor="middle" fill="#666" font-size="12" font-family="Arial">No Music Playing</text>
+        </svg>
+      </div>
+      
+      <!-- Track Info -->
+      <div class="info">
+        <div class="badge">
+          <svg class="icon" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"/>
+          </svg>
+          NOW PLAYING
+        </div>
+        
+        <h1 id="title" class="title"><span class="title-inner"></span></h1>
+        <h2 id="artist" class="artist">Artist Name</h2>
+        <p id="album" class="album">Album Name</p>
+        
+        <div class="meta">
+          <span id="year" class="meta-item"></span>
+          <span id="genre" class="meta-item"></span>
+        </div>
+      </div>
+      
+      <!-- Equalizer Bars -->
+      <div class="equalizer">
+        <div class="bar"></div>
+        <div class="bar"></div>
+        <div class="bar"></div>
+        <div class="bar"></div>
+        <div class="bar"></div>
+      </div>
+      
+    </div>
+  </div>
+
+  <script>
+    // Elements
+    const overlay = document.getElementById('overlay');
+    const albumArt = document.getElementById('albumArt');
+    const title = document.getElementById('title');
+    const artist = document.getElementById('artist');
+    const album = document.getElementById('album');
+    const year = document.getElementById('year');
+    const genre = document.getElementById('genre');
+
+    let currentId = null;
+    let ws = null;
+    let reconnectTimeout = null;
+
+    // Connect to WebSocket
+    function connect() {
+      const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+      ws = new WebSocket(`${protocol}//${window.location.host}`);
+
+      ws.onopen = () => {
+        console.log('✅ Connected to server');
+      };
+
+      ws.onmessage = (event) => {
+        try {
+          const data = JSON.parse(event.data);
+          if (data.type === 'update') {
+            updateDisplay(data.track);
+          }
+        } catch (error) {
+          console.error('Error parsing message:', error);
+        }
+      };
+
+      ws.onerror = (error) => {
+        console.error('WebSocket error:', error);
+      };
+
+      ws.onclose = () => {
+        console.log('❌ Disconnected. Reconnecting in 3s...');
+        reconnectTimeout = setTimeout(connect, 3000);
+      };
+    }
+
+    // Update the overlay display
+    function updateDisplay(track) {
+      const vinylDisc = document.getElementById('vinylDisc');
+      const placeholderArt = document.getElementById('placeholderArt');
+      
+      if (!track) {
+        // Keep overlay visible but show idle state
+        currentId = null;
+        title.querySelector('.title-inner').textContent = 'No music playing';
+        artist.textContent = 'Waiting for track...';
+        album.textContent = '';
+        year.textContent = '';
+        genre.textContent = '';
+        albumArt.style.display = 'none';
+        placeholderArt.style.display = 'block';
+        vinylDisc.classList.remove('spinning');
+        return;
+      }
+
+      // Check if it's a different track
+      if (track.id === currentId) {
+        return;
+      }
+
+      currentId = track.id;
+
+      // Update title with marquee effect
+      const titleText = track.title || 'Unknown Title';
+      const titleInner = title.querySelector('.title-inner');
+      
+      // Remove scrolling animation first
+      title.classList.remove('scrolling');
+      titleInner.textContent = titleText;
+      
+      // Force a reflow to restart the animation cleanly
+      void titleInner.offsetWidth;
+      
+      // Use requestAnimationFrame for smoother measurement
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          const titleWidth = titleInner.scrollWidth;
+          const containerWidth = title.clientWidth;
+          
+          if (titleWidth > containerWidth + 10) { // Add small buffer
+            // Create seamless loop by duplicating
+            titleInner.textContent = titleText + '    ' + titleText;
+            
+            // Use another RAF to ensure text is rendered before adding animation
+            requestAnimationFrame(() => {
+              title.classList.add('scrolling');
+            });
+          }
+        });
+      });
+      
+      // Update other text
+      artist.textContent = track.artist || 'Unknown Artist';
+      album.textContent = track.album || 'Unknown Album';
+      
+      // Update metadata
+      year.textContent = track.year || '';
+      year.style.display = track.year ? 'inline-block' : 'none';
+      
+      genre.textContent = track.genre || '';
+      genre.style.display = track.genre ? 'inline-block' : 'none';
+      
+      // Update album art
+      if (track.coverArt) {
+        const img = new Image();
+        img.onload = () => {
+          albumArt.style.opacity = '0';
+          placeholderArt.style.display = 'none';
+          setTimeout(() => {
+            albumArt.src = track.coverArt;
+            albumArt.style.display = 'block';
+            albumArt.style.opacity = '1';
+            vinylDisc.classList.add('spinning');
+          }, 300);
+        };
+        img.onerror = () => {
+          console.error('Failed to load album art');
+          albumArt.style.display = 'none';
+          placeholderArt.style.display = 'block';
+          vinylDisc.classList.remove('spinning');
+        };
+        img.src = track.coverArt;
+      } else {
+        albumArt.style.display = 'none';
+        placeholderArt.style.display = 'block';
+        vinylDisc.classList.remove('spinning');
+      }
+
+      // Keep overlay always visible
+      overlay.classList.add('visible');
+    }
+
+    // Start connection
+    connect();
+
+    // Cleanup on page unload
+    window.addEventListener('beforeunload', () => {
+      if (ws) ws.close();
+      if (reconnectTimeout) clearTimeout(reconnectTimeout);
+    });
+  </script>
+</body>
+</html>

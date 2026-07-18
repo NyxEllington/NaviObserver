@@ -1,0 +1,27 @@
+{
+  "name": "navidrome-overlay",
+  "version": "1.0.0",
+  "description": "A beautifully themed now playing overlay for Navidrome",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js",
+    "setup": "node setup.js",
+    "test": "node test-connection.js",
+    "ip": "node get-ip.js"
+  },
+  "keywords": [
+    "navidrome",
+    "now-playing",
+    "overlay",
+    "obs"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.18.2",
+    "axios": "^1.6.0",
+    "ws": "^8.14.2",
+    "dotenv": "^16.3.1"
+  }
+}

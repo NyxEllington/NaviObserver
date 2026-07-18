@@ -1,0 +1,18 @@
+version: '3.8'
+
+services:
+  naviobserver:
+    build: .
+    container_name: naviobserver
+    ports:
+      - "3000:3000"
+    environment:
+      - NAVIDROME_URL=${NAVIDROME_URL:-http://host.docker.internal:4533}
+      - NAVIDROME_USERNAME=${NAVIDROME_USERNAME}
+      - NAVIDROME_PASSWORD=${NAVIDROME_PASSWORD}
+      - PORT=${PORT:-3000}
+      - UPDATE_INTERVAL=${UPDATE_INTERVAL:-2000}
+    restart: unless-stopped
+    # Uncomment the following lines if you want to use a .env file
+    # env_file:
+    #   - .env
