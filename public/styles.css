@@ -45,7 +45,7 @@ body {
   overflow: hidden;
   min-width: 550px;
   max-width: 650px;
-  min-height: 200px;
+  height: 160px;
 }
 
 /* Card background - blurred album art */
@@ -75,7 +75,7 @@ body {
   background: linear-gradient(90deg, #ff6b6b, #f06595, #cc5de8, #845ef7, #5c7cfa, #339af0, #22b8cf, #20c997, #51cf66, #ffd93d);
   background-size: 200% 100%;
   animation: gradientShift 4s ease infinite;
-  z-index: 1;
+  z-index: 10;
 }
 
 @keyframes gradientShift {
@@ -88,10 +88,10 @@ body {
   position: relative;
   flex-shrink: 0;
   z-index: 2;
-  height: calc(100% - 4px);
-  width: 176px;
-  align-self: flex-end;
-  border-radius: 0 0 0 20px;
+  height: 100%;
+  width: 160px;
+  align-self: stretch;
+  border-radius: 20px 0 0 20px;
   overflow: hidden;
 }
 
@@ -189,7 +189,7 @@ body {
   color: white;
   position: relative;
   z-index: 5;
-  padding: 25px 0;
+  padding: 18px 0;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -204,7 +204,7 @@ body {
   letter-spacing: 1.5px;
   color: #ffd93d;
   text-shadow: 0 0 10px rgba(255, 217, 61, 0.5);
-  margin-bottom: 10px;
+  margin-bottom: 6px;
   text-transform: uppercase;
   z-index: 10;
 }
@@ -223,17 +223,17 @@ body {
 }
 
 .title {
-  font-size: 22px;
+  font-size: 21px;
   font-weight: 700;
-  margin-bottom: 8px;
+  margin-bottom: 5px;
   color: #ffd93d;
   text-shadow: 0 0 20px rgba(255, 217, 61, 0.6), 0 2px 4px rgba(0, 0, 0, 0.8);
   position: relative;
   overflow: hidden;
   width: 100%;
   max-width: 330px;
-  height: 30px;
-  line-height: 30px;
+  height: 28px;
+  line-height: 28px;
   z-index: 10;
   transition: opacity 0.3s ease-in-out;
 }
@@ -264,9 +264,9 @@ body {
 }
 
 .artist {
-  font-size: 16px;
+  font-size: 15px;
   font-weight: 600;
-  margin-bottom: 6px;
+  margin-bottom: 4px;
   color: #6bcf7f;
   text-shadow: 0 0 15px rgba(107, 207, 127, 0.5), 0 1px 3px rgba(0, 0, 0, 0.8);
   white-space: nowrap;
@@ -285,7 +285,7 @@ body {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  margin-bottom: 10px;
+  margin-bottom: 6px;
   max-width: 330px;
   z-index: 10;
   transition: opacity 0.3s ease-in-out;
@@ -295,7 +295,7 @@ body {
   display: flex;
   gap: 12px;
   font-size: 12px;
-  margin-top: 10px;
+  margin-top: 6px;
   position: relative;
   z-index: 10;
 }
@@ -325,7 +325,7 @@ body {
 
 /* Progress Bar */
 .progress-container {
-  margin-top: 12px;
+  margin-top: 8px;
   position: relative;
   z-index: 10;
   max-width: 280px;
