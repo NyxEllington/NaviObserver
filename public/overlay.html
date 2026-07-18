@@ -16,12 +16,12 @@
         <div class="vinyl-disc" id="vinylDisc">
           <div class="vinyl-outer"></div>
           <div class="vinyl-grooves"></div>
-          <div class="vinyl-label">
-            <div class="label-text">NOW PLAYING</div>
+          <div class="vinyl-label" id="vinylLabel">
+            <img id="albumArt" class="album-art" src="" alt="Album Art">
+            <div class="label-text" id="labelText">NOW PLAYING</div>
           </div>
           <div class="vinyl-center"></div>
         </div>
-        <img id="albumArt" class="album-art" src="" alt="Album Art">
         <svg id="placeholderArt" class="placeholder-art" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
           <defs>
             <linearGradient id="gradBg" x1="0%" y1="0%" x2="100%" y2="100%">
@@ -125,6 +125,7 @@
     function updateDisplay(track) {
       const vinylDisc = document.getElementById('vinylDisc');
       const placeholderArt = document.getElementById('placeholderArt');
+      const labelText = document.getElementById('labelText');
       
       if (!track) {
         // Keep overlay visible but show idle state
@@ -135,6 +136,7 @@
         year.textContent = '';
         genre.textContent = '';
         albumArt.style.display = 'none';
+        labelText.style.display = 'flex';
         placeholderArt.style.display = 'block';
         vinylDisc.classList.remove('spinning');
         return;
@@ -188,6 +190,7 @@
       genre.style.display = track.genre ? 'inline-block' : 'none';
       
       // Update album art
+      const labelText = document.getElementById('labelText');
       if (track.coverArt) {
         const img = new Image();
         img.onload = () => {
@@ -197,18 +200,21 @@
             albumArt.src = track.coverArt;
             albumArt.style.display = 'block';
             albumArt.style.opacity = '1';
+            labelText.style.display = 'none';
             vinylDisc.classList.add('spinning');
           }, 300);
         };
         img.onerror = () => {
           console.error('Failed to load album art');
           albumArt.style.display = 'none';
+          labelText.style.display = 'flex';
           placeholderArt.style.display = 'block';
           vinylDisc.classList.remove('spinning');
         };
         img.src = track.coverArt;
       } else {
         albumArt.style.display = 'none';
+        labelText.style.display = 'flex';
         placeholderArt.style.display = 'block';
         vinylDisc.classList.remove('spinning');
       }
