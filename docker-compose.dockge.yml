@@ -2,7 +2,9 @@ version: '3.8'
 
 services:
   naviobserver:
-    image: ghcr.io/nyxellington/naviobserver:latest
+    build:
+      context: https://github.com/NyxEllington/NaviObserver.git
+      dockerfile: Dockerfile
     container_name: naviobserver
     ports:
       - "3000:3000"
@@ -13,7 +15,7 @@ services:
       # Or use your Navidrome server IP/domain
       NAVIDROME_URL: http://host.docker.internal:4533
       
-      # Your Navidrome Credentials (REQUIRED)
+      # Your Navidrome Credentials (REQUIRED - Replace these values)
       NAVIDROME_USERNAME: your_username_here
       NAVIDROME_PASSWORD: your_password_here
       
@@ -21,10 +23,6 @@ services:
       PORT: 3000
       UPDATE_INTERVAL: 2000
     restart: unless-stopped
-    
-    # Build from GitHub repository (alternative to using image)
-    # Uncomment the build section below and comment out the image line above
-    # if you want to build from source instead
-    # build:
-    #   context: https://github.com/NyxEllington/NaviObserver.git
-    #   dockerfile: Dockerfile
+    labels:
+      - "com.dockge.description=Navidrome Now Playing Overlay"
+      - "com.dockge.icon=https://raw.githubusercontent.com/NyxEllington/NaviObserver/main/public/overlay.html"
