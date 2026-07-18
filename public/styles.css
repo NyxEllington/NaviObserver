@@ -45,7 +45,7 @@ body {
   overflow: hidden;
   min-width: 550px;
   max-width: 650px;
-  height: 190px;
+  height: 195px;
 }
 
 /* Card background - blurred album art */
@@ -89,7 +89,7 @@ body {
   flex-shrink: 0;
   z-index: 2;
   height: 100%;
-  width: 190px;
+  width: 195px;
   align-self: stretch;
   border-radius: 20px 0 0 20px;
   overflow: hidden;
