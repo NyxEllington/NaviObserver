@@ -32,18 +32,35 @@ body {
 .card {
   display: flex;
   align-items: center;
-  background: linear-gradient(135deg, rgba(30, 30, 35, 0.98) 0%, rgba(20, 20, 25, 0.98) 100%);
-  border-radius: 20px;
-  padding: 20px;
+  gap: 25px;
+  background: linear-gradient(135deg, rgba(20, 20, 28, 0.98) 0%, rgba(15, 15, 20, 0.98) 100%);
+  border-radius: 24px;
+  padding: 20px 25px;
   box-shadow: 
-    0 20px 60px rgba(0, 0, 0, 0.5),
-    0 0 0 1px rgba(255, 255, 255, 0.1),
-    inset 0 1px 0 rgba(255, 255, 255, 0.1);
-  backdrop-filter: blur(20px);
+    0 25px 70px rgba(0, 0, 0, 0.6),
+    0 0 0 1px rgba(255, 255, 255, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(30px);
   position: relative;
   overflow: hidden;
-  min-width: 500px;
-  max-width: 600px;
+  min-width: 550px;
+  max-width: 650px;
+}
+
+/* Card background - blurred album art */
+.card-background {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  filter: blur(40px) brightness(0.4) saturate(1.2);
+  opacity: 0;
+  transition: opacity 0.5s ease;
+  z-index: 0;
 }
 
 /* Top gradient accent */
@@ -53,11 +70,11 @@ body {
   top: 0;
   left: 0;
   right: 0;
-  height: 3px;
-  background: linear-gradient(90deg, #ff6b6b, #ffd93d, #6bcf7f, #4d96ff, #c77dff);
+  height: 4px;
+  background: linear-gradient(90deg, #ff6b6b, #f06595, #cc5de8, #845ef7, #5c7cfa, #339af0, #22b8cf, #20c997, #51cf66, #ffd93d);
   background-size: 200% 100%;
-  animation: gradientShift 3s ease infinite;
-  z-index: 0;
+  animation: gradientShift 4s ease infinite;
+  z-index: 1;
 }
 
 @keyframes gradientShift {
@@ -69,163 +86,90 @@ body {
 .album-container {
   position: relative;
   flex-shrink: 0;
-  margin-right: 20px;
   z-index: 2;
-  width: 120px;
-  height: 120px;
+  width: 140px;
+  height: 140px;
 }
 
-.album-container > .album-art {
-  width: 120px;
-  height: 120px;
-  border-radius: 12px;
+.album-glow {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 160px;
+  height: 160px;
+  border-radius: 16px;
+  background: linear-gradient(135deg, #845ef7, #5c7cfa, #339af0);
+  opacity: 0;
+  filter: blur(30px);
+  animation: pulseGlow 3s ease-in-out infinite;
+  z-index: 0;
+}
+
+.album-art:not([style*="display: none"]) ~ .album-glow {
+  opacity: 0.4;
+}
+
+@keyframes pulseGlow {
+  0%, 100% { 
+    opacity: 0.3;
+    transform: translate(-50%, -50%) scale(0.95);
+  }
+  50% { 
+    opacity: 0.5;
+    transform: translate(-50%, -50%) scale(1.05);
+  }
+}
+
+.album-art {
+  width: 140px;
+  height: 140px;
+  border-radius: 16px;
   object-fit: cover;
   box-shadow: 
-    0 10px 30px rgba(0, 0, 0, 0.5),
+    0 15px 40px rgba(0, 0, 0, 0.6),
     0 0 0 1px rgba(255, 255, 255, 0.1);
-  transition: opacity 0.3s ease;
-  display: block;
+  transition: all 0.3s ease;
+  display: none;
   position: relative;
   z-index: 3;
+}
+
+.album-art:hover {
+  transform: scale(1.02);
+  box-shadow: 
+    0 20px 50px rgba(0, 0, 0, 0.7),
+    0 0 0 1px rgba(255, 255, 255, 0.15);
 }
 
 .placeholder-art {
-  width: 120px;
-  height: 120px;
-  display: none;
-  position: relative;
-  z-index: 3;
-  filter: drop-shadow(0 10px 30px rgba(0, 0, 0, 0.5));
-}
-
-/* Vinyl Disc */
-.vinyl-disc {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
   width: 140px;
   height: 140px;
-  border-radius: 50%;
-  pointer-events: none;
-  z-index: 1;
-  transition: transform 0.3s ease;
-}
-
-.vinyl-disc.spinning {
-  animation: vinylSpin 3s linear infinite;
-}
-
-@keyframes vinylSpin {
-  from { transform: translate(-50%, -50%) rotate(0deg); }
-  to { transform: translate(-50%, -50%) rotate(360deg); }
-}
-
-.vinyl-outer {
-  position: absolute;
-  width: 100%;
-  height: 100%;
-  border-radius: 50%;
-  background: radial-gradient(
-    circle at 30% 30%,
-    rgba(40, 40, 40, 0.9) 0%,
-    rgba(20, 20, 20, 0.95) 40%,
-    rgba(10, 10, 10, 0.98) 100%
-  );
-  box-shadow: 
-    inset 0 0 20px rgba(0, 0, 0, 0.8),
-    inset 0 0 40px rgba(0, 0, 0, 0.6),
-    0 4px 20px rgba(0, 0, 0, 0.5);
-}
-
-.vinyl-grooves {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  width: 90%;
-  height: 90%;
-  border-radius: 50%;
-  background-image: 
-    repeating-radial-gradient(
-      circle at center,
-      transparent 0px,
-      transparent 1.5px,
-      rgba(255, 255, 255, 0.03) 1.5px,
-      rgba(255, 255, 255, 0.03) 3px
-    );
-  opacity: 0.8;
-}
-
-.vinyl-label {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  width: 50%;
-  height: 50%;
-  border-radius: 50%;
-  background: radial-gradient(
-    circle at center,
-    rgba(255, 217, 61, 0.9) 0%,
-    rgba(255, 200, 87, 0.8) 50%,
-    rgba(255, 170, 61, 0.7) 100%
-  );
-  box-shadow: 
-    inset 0 0 15px rgba(0, 0, 0, 0.3),
-    0 2px 10px rgba(255, 217, 61, 0.4);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  overflow: hidden;
-}
-
-.vinyl-label .album-art {
-  position: absolute;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  border-radius: 50%;
+  border-radius: 16px;
+  background: linear-gradient(135deg, rgba(40, 40, 50, 0.8) 0%, rgba(25, 25, 35, 0.8) 100%);
   display: none;
-  opacity: 0;
-  transition: opacity 0.3s ease;
-  box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.4);
-}
-
-.label-text {
-  font-size: 9px;
-  font-weight: 700;
-  color: rgba(0, 0, 0, 0.6);
-  letter-spacing: 1px;
-  text-align: center;
-  transform: rotate(0deg);
-  animation: labelPulse 2s ease-in-out infinite;
-  display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
+  gap: 12px;
+  position: relative;
+  z-index: 3;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  color: rgba(255, 255, 255, 0.4);
 }
 
-@keyframes labelPulse {
-  0%, 100% { opacity: 0.8; }
-  50% { opacity: 1; }
+.placeholder-art svg {
+  width: 48px;
+  height: 48px;
+  opacity: 0.5;
+  animation: pulse 2s ease-in-out infinite;
 }
 
-.vinyl-center {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  width: 15%;
-  height: 15%;
-  border-radius: 50%;
-  background: radial-gradient(
-    circle at center,
-    rgba(40, 40, 40, 0.95) 0%,
-    rgba(20, 20, 20, 1) 100%
-  );
-  box-shadow: 
-    inset 0 0 5px rgba(0, 0, 0, 0.8),
-    0 1px 3px rgba(0, 0, 0, 0.5);
+.placeholder-art span {
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1px;
 }
 
 /* Track Info */
@@ -360,6 +304,55 @@ body {
 
 .meta-item:empty {
   display: none;
+}
+
+/* Progress Bar */
+.progress-container {
+  margin-top: 12px;
+  position: relative;
+  z-index: 10;
+  max-width: 280px;
+}
+
+.progress-container::before {
+  content: '';
+  display: block;
+  width: 100%;
+  height: 5px;
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 3px;
+  overflow: hidden;
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.3);
+}
+
+.progress-bar {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 5px;
+  background: linear-gradient(90deg, #845ef7, #5c7cfa, #339af0, #22b8cf);
+  border-radius: 3px;
+  transition: width 0.3s ease;
+  box-shadow: 0 0 15px rgba(92, 124, 250, 0.6), 0 0 5px rgba(132, 94, 247, 0.8);
+}
+
+.progress-time {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 8px;
+  font-size: 12px;
+  color: #a0a0b0;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+}
+
+.progress-time span:first-child {
+  color: #5c7cfa;
+}
+
+.progress-time span:last-child {
+  color: #a0a0b0;
 }
 
 /* Equalizer */

@@ -10,40 +10,19 @@
   
   <div id="overlay" class="overlay visible">
     <div class="card">
+      <div class="card-background" id="cardBackground"></div>
       
       <!-- Album Art -->
       <div class="album-container">
-        <div class="vinyl-disc" id="vinylDisc">
-          <div class="vinyl-outer"></div>
-          <div class="vinyl-grooves"></div>
-          <div class="vinyl-label" id="vinylLabel">
-            <img id="albumArt" class="album-art" src="" alt="Album Art">
-            <div class="label-text" id="labelText">NOW PLAYING</div>
-          </div>
-          <div class="vinyl-center"></div>
+        <div class="album-glow"></div>
+        <img id="albumArt" class="album-art" src="" alt="Album Art">
+        <div id="placeholderArt" class="placeholder-art">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="10"></circle>
+            <polygon points="10 8 16 12 10 16 10 8"></polygon>
+          </svg>
+          <span>No Music Playing</span>
         </div>
-        <svg id="placeholderArt" class="placeholder-art" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
-          <defs>
-            <linearGradient id="gradBg" x1="0%" y1="0%" x2="100%" y2="100%">
-              <stop offset="0%" style="stop-color:#2d2d35;stop-opacity:1" />
-              <stop offset="100%" style="stop-color:#1a1a20;stop-opacity:1" />
-            </linearGradient>
-            <linearGradient id="gradVinyl" x1="0%" y1="0%" x2="100%" y2="100%">
-              <stop offset="0%" style="stop-color:#1a1a1a;stop-opacity:1" />
-              <stop offset="50%" style="stop-color:#0d0d0d;stop-opacity:1" />
-              <stop offset="100%" style="stop-color:#1a1a1a;stop-opacity:1" />
-            </linearGradient>
-          </defs>
-          <rect width="200" height="200" fill="url(#gradBg)" rx="12"/>
-          <circle cx="100" cy="100" r="65" fill="url(#gradVinyl)" opacity="0.3"/>
-          <circle cx="100" cy="100" r="55" fill="none" stroke="#333" stroke-width="0.5" opacity="0.4"/>
-          <circle cx="100" cy="100" r="45" fill="none" stroke="#333" stroke-width="0.5" opacity="0.4"/>
-          <circle cx="100" cy="100" r="35" fill="none" stroke="#333" stroke-width="0.5" opacity="0.4"/>
-          <circle cx="100" cy="100" r="20" fill="#ffd93d" opacity="0.8"/>
-          <path d="M100 55 L100 45 M100 145 L100 155 M55 100 L45 100 M145 100 L155 100" stroke="#ffd93d" stroke-width="3" stroke-linecap="round" opacity="0.6"/>
-          <circle cx="100" cy="100" r="6" fill="#2d2d35"/>
-          <text x="100" y="180" text-anchor="middle" fill="#666" font-size="12" font-family="Arial">No Music Playing</text>
-        </svg>
       </div>
       
       <!-- Track Info -->
@@ -63,6 +42,15 @@
           <span id="year" class="meta-item"></span>
           <span id="genre" class="meta-item"></span>
         </div>
+        
+        <!-- Progress Bar -->
+        <div class="progress-container">
+          <div class="progress-bar" id="progressBar"></div>
+          <div class="progress-time">
+            <span id="currentTime">0:00</span>
+            <span id="duration">0:00</span>
+          </div>
+        </div>
       </div>
       
       <!-- Equalizer Bars -->
@@ -81,15 +69,22 @@
     // Elements
     const overlay = document.getElementById('overlay');
     const albumArt = document.getElementById('albumArt');
+    const cardBackground = document.getElementById('cardBackground');
     const title = document.getElementById('title');
     const artist = document.getElementById('artist');
     const album = document.getElementById('album');
     const year = document.getElementById('year');
     const genre = document.getElementById('genre');
+    const progressBar = document.getElementById('progressBar');
+    const currentTime = document.getElementById('currentTime');
+    const duration = document.getElementById('duration');
 
     let currentId = null;
     let ws = null;
     let reconnectTimeout = null;
+    let trackStartTime = null;
+    let trackDuration = 0;
+    let progressInterval = null;
 
     // Connect to WebSocket
     function connect() {
@@ -123,9 +118,7 @@
 
     // Update the overlay display
     function updateDisplay(track) {
-      const vinylDisc = document.getElementById('vinylDisc');
       const placeholderArt = document.getElementById('placeholderArt');
-      const labelText = document.getElementById('labelText');
       
       if (!track) {
         // Keep overlay visible but show idle state
@@ -136,9 +129,11 @@
         year.textContent = '';
         genre.textContent = '';
         albumArt.style.display = 'none';
-        labelText.style.display = 'flex';
-        placeholderArt.style.display = 'block';
-        vinylDisc.classList.remove('spinning');
+        placeholderArt.style.display = 'flex';
+        progressBar.style.width = '0%';
+        currentTime.textContent = '0:00';
+        duration.textContent = '0:00';
+        if (progressInterval) clearInterval(progressInterval);
         return;
       }
 
@@ -190,7 +185,6 @@
       genre.style.display = track.genre ? 'inline-block' : 'none';
       
       // Update album art
-      const labelText = document.getElementById('labelText');
       if (track.coverArt) {
         const img = new Image();
         img.onload = () => {
@@ -200,27 +194,54 @@
             albumArt.src = track.coverArt;
             albumArt.style.display = 'block';
             albumArt.style.opacity = '1';
-            labelText.style.display = 'none';
-            vinylDisc.classList.add('spinning');
+            cardBackground.style.backgroundImage = `url(${track.coverArt})`;
+            cardBackground.style.opacity = '1';
           }, 300);
         };
         img.onerror = () => {
           console.error('Failed to load album art');
           albumArt.style.display = 'none';
-          labelText.style.display = 'flex';
-          placeholderArt.style.display = 'block';
-          vinylDisc.classList.remove('spinning');
+          placeholderArt.style.display = 'flex';
+          cardBackground.style.opacity = '0';
         };
         img.src = track.coverArt;
       } else {
         albumArt.style.display = 'none';
-        labelText.style.display = 'flex';
-        placeholderArt.style.display = 'block';
-        vinylDisc.classList.remove('spinning');
+        placeholderArt.style.display = 'flex';
+        cardBackground.style.opacity = '0';
+      }
+
+      // Update progress bar
+      if (track.duration) {
+        trackDuration = track.duration;
+        trackStartTime = Date.now();
+        duration.textContent = formatTime(track.duration);
+        
+        if (progressInterval) clearInterval(progressInterval);
+        updateProgress();
+        progressInterval = setInterval(updateProgress, 1000);
       }
 
       // Keep overlay always visible
       overlay.classList.add('visible');
+    }
+
+    // Update progress bar
+    function updateProgress() {
+      if (!trackStartTime || !trackDuration) return;
+      
+      const elapsed = Math.floor((Date.now() - trackStartTime) / 1000);
+      const percent = Math.min((elapsed / trackDuration) * 100, 100);
+      
+      progressBar.style.width = percent + '%';
+      currentTime.textContent = formatTime(elapsed);
+    }
+
+    // Format time (seconds to MM:SS)
+    function formatTime(seconds) {
+      const mins = Math.floor(seconds / 60);
+      const secs = Math.floor(seconds % 60);
+      return mins + ':' + (secs < 10 ? '0' : '') + secs;
     }
 
     // Start connection
@@ -230,6 +251,7 @@
     window.addEventListener('beforeunload', () => {
       if (ws) ws.close();
       if (reconnectTimeout) clearTimeout(reconnectTimeout);
+      if (progressInterval) clearInterval(progressInterval);
     });
   </script>
 </body>
