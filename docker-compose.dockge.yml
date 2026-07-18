@@ -2,10 +2,9 @@ version: '3.8'
 
 services:
   naviobserver:
-    build:
-      context: https://github.com/NyxEllington/NaviObserver.git
-      dockerfile: Dockerfile
+    image: ghcr.io/nyxellington/naviobserver:latest
     container_name: naviobserver
+    pull_policy: always
     ports:
       - "3000:3000"
     environment:

@@ -19,10 +19,9 @@ version: '3.8'
 
 services:
   naviobserver:
-    build:
-      context: https://github.com/NyxEllington/NaviObserver.git
-      dockerfile: Dockerfile
+    image: ghcr.io/nyxellington/naviobserver:latest
     container_name: naviobserver
+    pull_policy: always
     ports:
       - "3000:3000"
     environment:
@@ -159,16 +158,15 @@ version: '3.8'
 
 services:
   naviobserver:
-    build:
-      context: https://github.com/NyxEllington/NaviObserver.git
-      dockerfile: Dockerfile
+    image: ghcr.io/nyxellington/naviobserver:latest
     container_name: naviobserver
+    pull_policy: always
     ports:
       - "3000:3000"
     environment:
       NAVIDROME_URL: http://navidrome:4533  # Use container name
-      NAVIDROME_USERNAME: your_username
-      NAVIDROME_PASSWORD: your_password
+      NAVIDROME_USERNAME: ${NAVIDROME_USERNAME}
+      NAVIDROME_PASSWORD: ${NAVIDROME_PASSWORD}
       PORT: 3000
       UPDATE_INTERVAL: 2000
     restart: unless-stopped
@@ -202,17 +200,28 @@ services:
 
 ## Updates
 
-To update to the latest version:
+To update to the latest version in Dockge:
 
-1. In Dockge, click your stack
-2. Click "Rebuild" button
-3. Dockge will pull the latest code from GitHub and rebuild
+1. **Click your stack** in Dockge
+2. **Click "Update"** button (or the update icon 🔄)
+3. Dockge will pull the latest image automatically
 
-Or manually:
-```bash
-docker-compose pull
-docker-compose up -d
-```
+That's it! The image is automatically built and published from GitHub, so you'll always get the latest version.
+
+### Manual Update (if Update button doesn't work):
+
+1. **Stop the stack** (Down/Stop button)
+2. **Start it again** (Up/Start button)
+
+With `pull_policy: always`, it will check for and download the latest image every time.
+
+### Force Fresh Install:
+
+If you need to completely refresh:
+
+1. **Stop the stack**
+2. **Delete the stack** (trash icon)
+3. **Recreate it** with the same compose file and environment variables
 
 ## Support
 
